@@ -2,8 +2,8 @@ import '../index.css';
 import logo from "../images/header.svg";
 import menu from "../images/menu.svg";
 import Close from "../images/CloseIcon.svg";
-import React, { useEffect, useState } from "react";
-import { Link, BrowserRouter, Route, Switch, Redirect, useHistory } from 'react-router-dom';
+import React from "react";
+import { Link, Route, Switch } from 'react-router-dom';
 
 function Header(props) {
   return (
@@ -29,8 +29,8 @@ function Header(props) {
           <img src={logo} alt="логотип 'Место'" className="header__logo" />
           <div className='header__navbar'>
           <p className='header__email'>{props.emailData.email}</p>
-          <button type='button' onClick={props.onMenu} className={`header__menu-button ${props.isMenuIcon}`}><img src={menu} /></button>
-          <button type='button' onClick={props.onClose} className={`header__close-button ${props.isMenuCloseIcon}`}><img src={Close} /></button>
+          <button type='button' onClick={props.onMenu} className={`header__menu-button ${props.isMenuIcon}`}><img src={menu} alt='Меню' /></button>
+          <button type='button' onClick={props.onClose} className={`header__close-button ${props.isMenuCloseIcon}`}><img src={Close} alt='Крестик' /></button>
           <button onClick={props.onLogout} className="header__button">Выход</button>
           </div>
         </header>

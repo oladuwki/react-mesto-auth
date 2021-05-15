@@ -1,7 +1,6 @@
-import * as auth from '../utils/auth.js';
 import React, { useState } from "react";
-import { Link, withRouter } from 'react-router-dom';
-import InfoTooltip from './InfoTooltip'; 
+import { Link } from 'react-router-dom';
+
 
 function Register({ onRegister }) {
   const [registerData, setRegisterData] = useState({

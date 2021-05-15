@@ -1,6 +1,6 @@
 import '../index.css';
 import React, { useEffect, useState } from "react";
-import { BrowserRouter, Route, Switch, Redirect, useHistory } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import Header from "./Header.js";
 import Main from "./Main.js";
 import Footer from "./Footer.js";
@@ -16,6 +16,8 @@ import Register from './Register';
 import InfoTooltip from './InfoTooltip';
 import * as auth from '../utils/auth.js';
 import ProtectedRoute from './ProtectedRoute';
+import Union from "../images/Union.svg";
+import Union1 from "../images/Union1.svg";
 
 
 function App() {
@@ -36,7 +38,7 @@ function App() {
     const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
     const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
     const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
-
+    const [isNotice, setNoticeState] = useState(false);
 
     const [loggedIn, setIsLoggedIn] = React.useState(false);
 
@@ -73,13 +75,6 @@ function App() {
         setMenuIconOpen(true);
         setMenuCloseIconOpen(true);
       }
-      // function handleInfoTooltipPositivePopupClick() {
-      //   setInfoTooltipPositivePopupOpen(true);
-      // }
-
-      // function handleInfoTooltipPopupClick() {
-      //   setInfoTooltipPopupOpen(true);
-      // }
 
       function handleEditProfileClick() {
         setEditProfilePopupOpen(true);
@@ -172,27 +167,24 @@ function App() {
 
     useEffect(() => {
       tokenCheck();
-      console.log(userInfo);
     }, []);
     
     const tokenCheck = () => {
       const jwt = localStorage.getItem('jwt');
-      console.log(jwt);
       if (jwt) {
         auth
         .getContent(jwt)
         .then((res) => {
           if(res){
-            console.log(res.data.email);
             const email = res.data.email;
-            console.log(email);
             setUserInfo({email});
-            
             setIsLoggedIn(true);
-            history.push('/mesto');
-            
+            history.push('/mesto'); 
           }
-        });
+        })
+        .catch((err) => {
+          console.log(err)
+      });
       }
       
     };
@@ -206,8 +198,11 @@ function App() {
           setUserInfo(data);
           tokenCheck();
           history.push('/mesto');
+        })
+        .catch((err) => {
+          console.log(err)
         });
-    };
+      };
 
     const onLogout = () => {
       setIsLoggedIn(false);
@@ -218,12 +213,17 @@ function App() {
     function onRegister(data) {
       return auth
       .register(data)
-      .then(() => {
-        history.push('/signin');
-        setInfoTooltipPositivePopupOpen(true);
+      .then((res) => {
+        if(res) {
+          history.push('/signin');
+          setInfoTooltipPositivePopupOpen(true);
+          setNoticeState(true);
+        }
       })
-      .catch(() => {
-        setInfoTooltipNegativePopupOpen(true);
+      .catch((err) => {
+        console.log(err);
+        setInfoTooltipNegativePopupOpen(true)
+        setNoticeState(false);
       })
     }
     
@@ -234,19 +234,24 @@ function App() {
     <Header emailData={userInfo} onLogout={onLogout} isOpen ={isMenuOpened && 'header-menu_opened'} onMenu={handleMenuClick} 
     isMenuIcon={isMenuIcon && 'header-menu_closed'}
     isMenuCloseIcon={isMenuCloseIcon ? 'header-menu_opened' : 'header-menu_closed'}   onClose={closeAllPopups} />
-    {/* <InfoTooltip isOpenPositive={isInfoTooltipPositivePopupOpen && 'popup_opened'} isOpenNegative={isInfoTooltipNegativePopupOpen && 'popup_opened'} onClose={closeAllPopups}  /> */}
+    
       <Switch>
       <ProtectedRoute path='/mesto' component={Main} loggedIn={loggedIn} cards={cards} onEditAvatar={handleEditAvatarClick} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick} onCardLike= {handleCardLike} onCardDelete={handleCardDelete} />
         <Route path='/signup' >
-          <InfoTooltip isOpenNegative={isInfoTooltipNegativePopupOpen && 'popup_opened'} onClose={closeAllPopups}  />
           <Register onRegister= {onRegister} /> 
         </Route>
         <Route path='/signin'>
-        <InfoTooltip isOpenPositive={isInfoTooltipPositivePopupOpen && 'popup_opened'}  onClose={closeAllPopups}  />
           <Login onLogin={ onLogin } />
         </Route>
     </Switch>
-        <EditProfilePopup isOpen={isEditProfilePopupOpen && 'popup_opened'} onClose={closeAllPopups} onUpdateUser = {handleUpdateUser} />
+
+        <InfoTooltip 
+        stateNotice={isNotice ? 'positiveNotice' : 'negativeNotice'} image={isNotice ? Union : Union1} 
+        title={isNotice ? 'Вы успешно зарегестрировались!' : 'Что-то пошло не так! Попробуйте ещё раз.'} 
+        isOpen={isNotice ? (isInfoTooltipPositivePopupOpen && 'popup_opened') : (isInfoTooltipNegativePopupOpen && 'popup_opened')} 
+        onClose={closeAllPopups}  />
+        
+        <EditProfilePopup isOpen={isEditProfilePopupOpen && 'popup_opened'} onClose={closeAllPopups} onUpdateUser = {handleUpdateUser} /> 
         <EditAvatarPopup isOpen={isEditAvatarPopupOpen && 'popup_opened'} onClose={closeAllPopups} onUpdateAvatar = {handleUpdateAvatar} />
         <AddPlacePopup isOpen={isAddPlacePopupOpen && 'popup_opened'} onClose={closeAllPopups} onAddPlace = {handleAddPlace} />
         <ImagePopup onClose={closeAllPopups} card={selectedCard}/>

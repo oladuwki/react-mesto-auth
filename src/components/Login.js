@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import * as auth from '../utils/auth.js';
-import { withRouter } from 'react-router-dom';
+
 
 function Login({onLogin}) {
   const [loginData, setLoginData] = useState({
