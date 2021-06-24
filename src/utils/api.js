@@ -1,7 +1,6 @@
 export default class Api {
-  constructor(config) {
-      this._url = config.url;
-      this._headers = config.headers;
+  constructor({ address }) {
+    this._address = address;
   }
 
   _handleResponse(res) {
@@ -12,17 +11,23 @@ export default class Api {
   }
 
   getInitalCards(){
-      return fetch(`${this._url}cards`, {
+      return fetch(`${this._address}cards`, {
           method: "GET",
-          headers: this._headers
+          headers: {
+            authorization: `Bearer ${localStorage.getItem('jwt')}`,
+            "Content-Type": "application/json",
+          },
         })
         .then(this._handleResponse)
   }
 
   addCard({name, link}) {
-    return fetch(`${this._url}cards`, {
+    return fetch(`${this._address}cards`, {
       method: 'POST',
-      headers: this._headers,
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         name: name,
         link: link
@@ -33,33 +38,45 @@ export default class Api {
 
   
   deleteCard(cardId){
-    return fetch(`${this._url}cards/${cardId}`, {
+    return fetch(`${this._address}cards/${cardId}`, {
         method: "DELETE",
-        headers: this._headers,
+        headers: {
+          authorization: `Bearer ${localStorage.getItem('jwt')}`,
+          "Content-Type": "application/json",
+        },
     })
     .then(this._handleResponse)
   }
 
   putLikes(cardId) {
-    return fetch(`${this._url}cards/likes/${cardId}`, {
+    return fetch(`${this._address}cards/likes/${cardId}`, {
         method: "PUT",
-        headers: this._headers
+        headers: {
+          authorization: `Bearer ${localStorage.getItem('jwt')}`,
+          "Content-Type": "application/json",
+        },
     })
     .then(this._handleResponse)
   }
 
   deleteLikes(cardId) {
-    return fetch(`${this._url}cards/likes/${cardId}`, {
+    return fetch(`${this._address}cards/likes/${cardId}`, {
         method: "DELETE",
-        headers: this._headers
+        headers: {
+          authorization: `Bearer ${localStorage.getItem('jwt')}`,
+          "Content-Type": "application/json",
+        },
     })
     .then(this._handleResponse)
   }
 
   getProfileInfo() {
-    return fetch(`${this._url}users/me`, {
+    return fetch(`${this._address}users/me`, {
         method: "GET",
-        headers: this._headers
+        headers: {
+          authorization: `Bearer ${localStorage.getItem('jwt')}`,
+          "Content-Type": "application/json",
+        },
       })
       .then(this._handleResponse)
   }
@@ -69,9 +86,12 @@ export default class Api {
   }
 
   saveProfileInfo({name, description}) {
-    return fetch(`${this._url}users/me`, {
+    return fetch(`${this._address}users/me`, {
       method: 'PATCH',
-      headers: this._headers,
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         name: name,
         about: description
@@ -81,9 +101,12 @@ export default class Api {
   }
 
   saveAvatar({avatar}) {
-    return fetch(`${this._url}users/me/avatar`, {
+    return fetch(`${this._address}users/me/avatar`, {
       method: 'PATCH',
-      headers: this._headers,
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
       avatar: avatar
       })
@@ -93,11 +116,9 @@ export default class Api {
 
 }
 
- export const api = new Api({
-  url:"https://mesto.nomoreparties.co/v1/cohort-21/",
-  headers: {
-      'Content-Type': 'application/json',
-      authorization: 'a8225bf7-b253-4907-b1a0-ba222b85105e',
-  }
-});
+const config = {
+  address: "https://api.oladuwki.nomoredomains.club/",
+};
+
+export const api = new Api(config);
 
